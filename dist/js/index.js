@@ -154,10 +154,10 @@ define("Stone", ["require", "exports"], function (require, exports) {
             return this.isDark ? this.field.board.checkers.isDarksTurn : !this.field.board.checkers.isDarksTurn;
         };
         Stone.prototype.markAsSelected = function () {
-            this.field.htmlEl.classList.add('selected-stone-field');
+            this.htmlEl.classList.add('selected-stone-field');
         };
         Stone.prototype.unmarkAsSelected = function () {
-            this.field.htmlEl.classList.remove('selected-stone-field');
+            this.htmlEl.classList.remove('selected-stone-field');
         };
         Stone.prototype.canCapture = function (stone) {
             if (this.getNeighbourEnemyStones().indexOf(stone) != -1) {

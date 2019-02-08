@@ -49,7 +49,7 @@ body
             position: absolute
             left: 0
             top: 0
-        .capturable-stone-field:after
+        .capturable-stone
             content: ''
             position: absolute
             top: 0
@@ -57,14 +57,8 @@ body
             width: 100%
             height: 100%
             background-color: rgba(255, 0, 0, .2)
-        .selected-stone-field::after
-            content: ''
-            position: absolute
-            top: 0
-            left: 0
-            width: 100%
-            height: 100%
-            background-color: rgba(209, 122, 14, .4)
+        .selected-stone-field
+            transform: scale(1.4, 1.4);
         .stone
             width: 65%
             height: 65%

@@ -104,11 +104,11 @@ export class Stone {
     }
 
     markAsSelected() {
-        this.field.htmlEl.classList.add('selected-stone-field');
+        this.htmlEl.classList.add('selected-stone-field');
     }
 
     unmarkAsSelected() {
-        this.field.htmlEl.classList.remove('selected-stone-field');
+        this.htmlEl.classList.remove('selected-stone-field');
     }
 
     canCapture(stone: Stone) {
