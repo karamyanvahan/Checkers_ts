@@ -49,7 +49,7 @@ body {
       position: absolute;
       left: 0;
       top: 0; }
-    .checkers .board .capturable-stone {
+    .checkers .board .capturable-stone-field::after {
       content: '';
       position: absolute;
       top: 0;
@@ -57,7 +57,7 @@ body {
       width: 100%;
       height: 100%;
       background-color: rgba(255, 0, 0, 0.2); }
-    .checkers .board .selected-stone-field {
+    .checkers .board .selected-stone {
       transform: scale(1.4, 1.4); }
     .checkers .board .stone {
       width: 65%;

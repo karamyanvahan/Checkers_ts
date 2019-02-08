@@ -78,6 +78,8 @@ define("Stone", ["require", "exports"], function (require, exports) {
         };
         Stone.prototype.getAvailableMoves = function () {
             var _this = this;
+            if (this.isQueen)
+                return this.getQueenAvailableMoves();
             var neighbourBlackFields = this.getNeighbourBlackFields();
             var moves = neighbourBlackFields
                 .filter(function (field) {
@@ -91,6 +93,44 @@ define("Stone", ["require", "exports"], function (require, exports) {
                 .filter(function (field) { return !field.stone; });
             if (this.field.board.checkers.thereAreCapturableStones())
                 moves = [];
+            return moves;
+        };
+        Stone.prototype.getQueenAvailableMoves = function () {
+            var moves = [];
+            var fields = this.field.board.fields;
+            for (var d = 1; d <= 8; d++) {
+                var field = fields[this.field.y - d] ? fields[this.field.y - d][this.field.x - d] : undefined;
+                if (field) {
+                    if (field.stone)
+                        break;
+                    moves.push(field);
+                }
+            }
+            for (var d = 1; d <= 8; d++) {
+                var field = fields[this.field.y - d] ? fields[this.field.y - d][this.field.x + d] : undefined;
+                if (field) {
+                    if (field.stone)
+                        break;
+                    moves.push(field);
+                }
+            }
+            for (var d = 1; d <= 8; d++) {
+                var field = fields[this.field.y + d] ? fields[this.field.y + d][this.field.x + d] : undefined;
+                if (field) {
+                    if (field.stone)
+                        break;
+                    moves.push(field);
+                }
+            }
+            for (var d = 1; d <= 8; d++) {
+                var field = fields[this.field.y + d] ? fields[this.field.y + d][this.field.x - d] : undefined;
+                if (field) {
+                    if (field.stone)
+                        break;
+                    moves.push(field);
+                }
+            }
+            console.log(moves);
             return moves;
         };
         Stone.prototype.getNeighbourBlackFields = function () {
@@ -154,10 +194,10 @@ define("Stone", ["require", "exports"], function (require, exports) {
             return this.isDark ? this.field.board.checkers.isDarksTurn : !this.field.board.checkers.isDarksTurn;
         };
         Stone.prototype.markAsSelected = function () {
-            this.htmlEl.classList.add('selected-stone-field');
+            this.htmlEl.classList.add('selected-stone');
         };
         Stone.prototype.unmarkAsSelected = function () {
-            this.htmlEl.classList.remove('selected-stone-field');
+            this.htmlEl.classList.remove('selected-stone');
         };
         Stone.prototype.canCapture = function (stone) {
             if (this.getNeighbourEnemyStones().indexOf(stone) != -1) {
@@ -193,7 +233,6 @@ define("Stone", ["require", "exports"], function (require, exports) {
             if (!thereIsStone) {
                 this.win();
             }
-            this.win();
         };
         Stone.prototype.win = function () {
             var message = this.isDark ? "Darks won" : "Lights won";
@@ -242,7 +281,6 @@ define("Board", ["require", "exports", "Stone", "Field"], function (require, exp
                             stone.htmlEl.classList.add(className);
                             field.stone = stone;
                             field.htmlEl.appendChild(stone.htmlEl);
-                            stone.becomeQueen();
                         }
                     }
                     else {

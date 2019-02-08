@@ -22,6 +22,9 @@ export class Stone {
     }
 
     getAvailableMoves() {
+        if(this.isQueen)
+            return this.getQueenAvailableMoves();
+
         let neighbourBlackFields = this.getNeighbourBlackFields();
         let moves = neighbourBlackFields
                     .filter(field => {
@@ -33,6 +36,45 @@ export class Stone {
                     })
                     .filter(field => !field.stone);
         if(this.field.board.checkers.thereAreCapturableStones()) moves = [];
+        return moves;
+    }
+
+    private getQueenAvailableMoves() {
+        let moves: Field[] = [];
+        let fields = this.field.board.fields;
+        for(let d = 1; d <= 8; d++) {
+            let field = fields[this.field.y - d]? fields[this.field.y - d][this.field.x - d] : undefined;
+            if(field) {
+                if(field.stone)
+                    break;
+                moves.push(field);
+            }
+        }
+        for(let d = 1; d <= 8; d++) {
+            let field = fields[this.field.y - d]? fields[this.field.y - d][this.field.x + d] : undefined;
+            if(field) {
+                if(field.stone)
+                    break;
+                moves.push(field);
+            }
+        }
+        for(let d = 1; d <= 8; d++) {
+            let field = fields[this.field.y + d]? fields[this.field.y + d][this.field.x + d] : undefined;
+            if(field) {
+                if(field.stone)
+                    break;
+                moves.push(field);
+            }
+        }
+        for(let d = 1; d <= 8; d++) {
+            let field = fields[this.field.y + d]? fields[this.field.y + d][this.field.x - d] : undefined;
+            if(field) {
+                if(field.stone)
+                    break;
+                moves.push(field);
+            }
+        }
+        console.log(moves)
         return moves;
     }
 
@@ -104,11 +146,11 @@ export class Stone {
     }
 
     markAsSelected() {
-        this.htmlEl.classList.add('selected-stone-field');
+        this.htmlEl.classList.add('selected-stone');
     }
 
     unmarkAsSelected() {
-        this.htmlEl.classList.remove('selected-stone-field');
+        this.htmlEl.classList.remove('selected-stone');
     }
 
     canCapture(stone: Stone) {
@@ -146,7 +188,6 @@ export class Stone {
             if(!thereIsStone) {
                 this.win();
             }
-            this.win();
     }
 
     win() {

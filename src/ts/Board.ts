@@ -26,7 +26,6 @@ export class Board {
                         stone.htmlEl.classList.add(className);
                         field.stone = stone;
                         field.htmlEl.appendChild(stone.htmlEl);
-                        stone.becomeQueen();
                     }
                 } else {
                     field.isDark = false;
