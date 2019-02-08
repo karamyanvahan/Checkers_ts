@@ -1,0 +1,78 @@
+body
+    margin: 0
+
+#wrapper
+    width: 100vw
+    height: 100vh
+    display: flex
+    justify-content: center
+    align-items: center
+
+.checkers
+    width: 600px
+    height: 600px
+    border: 1px solid #000
+    position: relative
+    .win-message-box
+        position: absolute
+        width: 100%
+        height: 100%
+        top: 0
+        left: 0
+        display: flex
+        align-items: center
+        justify-content: center
+        background-color: rgba(0, 0, 0, .9);
+        .message
+            color: #fff
+            font-size: 64px
+    .board
+        height: 100%
+        .field
+            width: 12.5%
+            height: 12.5%
+            float: left
+            display: flex
+            justify-content: center
+            align-items: center
+            position: relative
+            box-sizing: border-box
+        .dark-field
+            background-color: #555555
+        .light-field
+            background-color: #ffffff
+        .available-move-field::after
+            content: ''
+            width: 100%
+            height: 100%
+            background-color: rgba(0, 255, 0, .2)
+            position: absolute
+            left: 0
+            top: 0
+        .capturable-stone-field:after
+            content: ''
+            position: absolute
+            top: 0
+            left: 0
+            width: 100%
+            height: 100%
+            background-color: rgba(255, 0, 0, .2)
+        .selected-stone-field::after
+            content: ''
+            position: absolute
+            top: 0
+            left: 0
+            width: 100%
+            height: 100%
+            background-color: rgba(209, 122, 14, .4)
+        .stone
+            width: 65%
+            height: 65%
+            border-radius: 50%
+            display: inline-block
+        .dark-stone
+            background-color: #000000
+        .light-stone
+            background-color: #ffffff
+        .queen
+            width: 65%
