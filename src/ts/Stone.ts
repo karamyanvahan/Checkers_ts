@@ -14,7 +14,8 @@ export class Stone {
         this.field = newField;
         this.field.stone = this;
         newField.htmlEl.appendChild(this.htmlEl);
-        return true;
+        if((this.isDark && this.field.y == 7) || (!this.isDark && this.field.y == 0))
+            this.becomeQueen();
     }
 
     canMove(field: Field) {
@@ -74,8 +75,42 @@ export class Stone {
                 moves.push(field);
             }
         }
-        console.log(moves)
         return moves;
+    }
+
+    private getQueenCaptruableCandidates() {
+        let stones: Stone[] = [];
+        let fields = this.field.board.fields;
+        for(let d = 1; d <= 8; d++) {
+            let field = fields[this.field.y - d]? fields[this.field.y - d][this.field.x - d] : undefined;
+            if(field && field.stone) {
+                stones.push(field.stone);
+                break;                    
+            }
+        }
+        for(let d = 1; d <= 8; d++) {
+            let field = fields[this.field.y - d]? fields[this.field.y - d][this.field.x + d] : undefined;
+            if(field && field.stone) {
+                stones.push(field.stone);
+                break;                    
+            }
+        }
+        for(let d = 1; d <= 8; d++) {
+            let field = fields[this.field.y + d]? fields[this.field.y + d][this.field.x + d] : undefined;
+            if(field && field.stone) {
+                stones.push(field.stone);
+                break;                    
+            }
+        }
+        for(let d = 1; d <= 8; d++) {
+            let field = fields[this.field.y + d]? fields[this.field.y + d][this.field.x - d] : undefined;
+            if(field && field.stone) {
+                stones.push(field.stone);
+                break;                    
+            }
+        }
+        let capturableCandidates = stones.filter(stone => stone.isDark != this.isDark);
+        return capturableCandidates;
     }
 
     getNeighbourBlackFields() {
@@ -90,7 +125,10 @@ export class Stone {
         return neighbourBlackFields;
     }
 
-    getNeighbourEnemyStones() {
+    getCaptruableCandidates() {
+        if(this.isQueen)
+            return this.getQueenCaptruableCandidates();
+
         let neighbourBlackFields = this.getNeighbourBlackFields();
         let neighbourEnemyStones = neighbourBlackFields
                                 .filter(field => field.stone)
@@ -123,7 +161,7 @@ export class Stone {
     }
 
     getCapturableStones() {
-        let capturableStones = this.getNeighbourEnemyStones().filter(stone => this.canCapture(stone));
+        let capturableStones = this.getCaptruableCandidates().filter(stone => this.canCapture(stone));
         return capturableStones;
     }
 
@@ -154,14 +192,12 @@ export class Stone {
     }
 
     canCapture(stone: Stone) {
-        if(this.getNeighbourEnemyStones().indexOf(stone) != -1) {
-            let dX = (stone.field.x - this.field.x);
-            let dY = (stone.field.y - this.field.y);
-            let fieldToMove
-            if(Math.abs(dX) == 1 && Math.abs(dY) == 1) {
-                let fields = this.field.board.fields;
-                fieldToMove = fields[this.field.y + dY * 2] ? fields[this.field.y + dY * 2][this.field.x + dX * 2] : undefined;
-            }
+        if(this.getCaptruableCandidates().indexOf(stone) != -1) {
+            let dX = (stone.field.x - this.field.x) / Math.abs(stone.field.x - this.field.x);
+            let dY = (stone.field.y - this.field.y) / Math.abs(stone.field.y - this.field.y);
+            let fieldToMove: Field;
+            let fields = this.field.board.fields;
+            fieldToMove = fields[stone.field.y + dY] ? fields[stone.field.y + dY][stone.field.x + dX] : undefined;
             return fieldToMove && !fieldToMove.stone;
         } else {
             return false;
@@ -169,10 +205,10 @@ export class Stone {
     }
 
     capture(stoneBeingCaptured: Stone) {
-            let dX = (stoneBeingCaptured.field.x - this.field.x);
-            let dY = (stoneBeingCaptured.field.y - this.field.y);
+            let dX = (stoneBeingCaptured.field.x - this.field.x) / Math.abs(stoneBeingCaptured.field.x - this.field.x);
+            let dY = (stoneBeingCaptured.field.y - this.field.y) / Math.abs(stoneBeingCaptured.field.y - this.field.y);
             let fields = this.field.board.fields;
-            let fieldToMove = fields[this.field.y + dY * 2][this.field.x + dX * 2];
+            let fieldToMove = fields[stoneBeingCaptured.field.y + dY][stoneBeingCaptured.field.x + dX];
             this.field.board.checkers.hideCapturableStones();
             stoneBeingCaptured.field.stone = null;
             stoneBeingCaptured.field.htmlEl.removeChild(stoneBeingCaptured.htmlEl);

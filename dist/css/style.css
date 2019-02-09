@@ -58,7 +58,7 @@ body {
       height: 100%;
       background-color: rgba(255, 0, 0, 0.2); }
     .checkers .board .selected-stone {
-      transform: scale(1.4, 1.4); }
+      transform: scale(1.2, 1.2); }
     .checkers .board .stone {
       width: 65%;
       height: 65%;

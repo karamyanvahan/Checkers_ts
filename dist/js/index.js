@@ -71,7 +71,8 @@ define("Stone", ["require", "exports"], function (require, exports) {
             this.field = newField;
             this.field.stone = this;
             newField.htmlEl.appendChild(this.htmlEl);
-            return true;
+            if ((this.isDark && this.field.y == 7) || (!this.isDark && this.field.y == 0))
+                this.becomeQueen();
         };
         Stone.prototype.canMove = function (field) {
             return this.getAvailableMoves().indexOf(field) != -1;
@@ -130,8 +131,42 @@ define("Stone", ["require", "exports"], function (require, exports) {
                     moves.push(field);
                 }
             }
-            console.log(moves);
             return moves;
+        };
+        Stone.prototype.getQueenCaptruableCandidates = function () {
+            var _this = this;
+            var stones = [];
+            var fields = this.field.board.fields;
+            for (var d = 1; d <= 8; d++) {
+                var field = fields[this.field.y - d] ? fields[this.field.y - d][this.field.x - d] : undefined;
+                if (field && field.stone) {
+                    stones.push(field.stone);
+                    break;
+                }
+            }
+            for (var d = 1; d <= 8; d++) {
+                var field = fields[this.field.y - d] ? fields[this.field.y - d][this.field.x + d] : undefined;
+                if (field && field.stone) {
+                    stones.push(field.stone);
+                    break;
+                }
+            }
+            for (var d = 1; d <= 8; d++) {
+                var field = fields[this.field.y + d] ? fields[this.field.y + d][this.field.x + d] : undefined;
+                if (field && field.stone) {
+                    stones.push(field.stone);
+                    break;
+                }
+            }
+            for (var d = 1; d <= 8; d++) {
+                var field = fields[this.field.y + d] ? fields[this.field.y + d][this.field.x - d] : undefined;
+                if (field && field.stone) {
+                    stones.push(field.stone);
+                    break;
+                }
+            }
+            var capturableCandidates = stones.filter(function (stone) { return stone.isDark != _this.isDark; });
+            return capturableCandidates;
         };
         Stone.prototype.getNeighbourBlackFields = function () {
             var fields = this.field.board.fields;
@@ -144,8 +179,10 @@ define("Stone", ["require", "exports"], function (require, exports) {
             ].filter(function (field) { return field != undefined; });
             return neighbourBlackFields;
         };
-        Stone.prototype.getNeighbourEnemyStones = function () {
+        Stone.prototype.getCaptruableCandidates = function () {
             var _this = this;
+            if (this.isQueen)
+                return this.getQueenCaptruableCandidates();
             var neighbourBlackFields = this.getNeighbourBlackFields();
             var neighbourEnemyStones = neighbourBlackFields
                 .filter(function (field) { return field.stone; })
@@ -175,7 +212,7 @@ define("Stone", ["require", "exports"], function (require, exports) {
         };
         Stone.prototype.getCapturableStones = function () {
             var _this = this;
-            var capturableStones = this.getNeighbourEnemyStones().filter(function (stone) { return _this.canCapture(stone); });
+            var capturableStones = this.getCaptruableCandidates().filter(function (stone) { return _this.canCapture(stone); });
             return capturableStones;
         };
         Stone.prototype.showCapturableStones = function () {
@@ -200,14 +237,12 @@ define("Stone", ["require", "exports"], function (require, exports) {
             this.htmlEl.classList.remove('selected-stone');
         };
         Stone.prototype.canCapture = function (stone) {
-            if (this.getNeighbourEnemyStones().indexOf(stone) != -1) {
-                var dX = (stone.field.x - this.field.x);
-                var dY = (stone.field.y - this.field.y);
+            if (this.getCaptruableCandidates().indexOf(stone) != -1) {
+                var dX = (stone.field.x - this.field.x) / Math.abs(stone.field.x - this.field.x);
+                var dY = (stone.field.y - this.field.y) / Math.abs(stone.field.y - this.field.y);
                 var fieldToMove = void 0;
-                if (Math.abs(dX) == 1 && Math.abs(dY) == 1) {
-                    var fields = this.field.board.fields;
-                    fieldToMove = fields[this.field.y + dY * 2] ? fields[this.field.y + dY * 2][this.field.x + dX * 2] : undefined;
-                }
+                var fields = this.field.board.fields;
+                fieldToMove = fields[stone.field.y + dY] ? fields[stone.field.y + dY][stone.field.x + dX] : undefined;
                 return fieldToMove && !fieldToMove.stone;
             }
             else {
@@ -215,10 +250,10 @@ define("Stone", ["require", "exports"], function (require, exports) {
             }
         };
         Stone.prototype.capture = function (stoneBeingCaptured) {
-            var dX = (stoneBeingCaptured.field.x - this.field.x);
-            var dY = (stoneBeingCaptured.field.y - this.field.y);
+            var dX = (stoneBeingCaptured.field.x - this.field.x) / Math.abs(stoneBeingCaptured.field.x - this.field.x);
+            var dY = (stoneBeingCaptured.field.y - this.field.y) / Math.abs(stoneBeingCaptured.field.y - this.field.y);
             var fields = this.field.board.fields;
-            var fieldToMove = fields[this.field.y + dY * 2][this.field.x + dX * 2];
+            var fieldToMove = fields[stoneBeingCaptured.field.y + dY][stoneBeingCaptured.field.x + dX];
             this.field.board.checkers.hideCapturableStones();
             stoneBeingCaptured.field.stone = null;
             stoneBeingCaptured.field.htmlEl.removeChild(stoneBeingCaptured.htmlEl);
