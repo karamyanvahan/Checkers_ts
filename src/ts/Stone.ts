@@ -23,6 +23,8 @@ export class Stone {
     }
 
     getAvailableMoves() {
+        if(this.field.board.checkers.capturableStonesExist())
+            return [];
         if(this.isQueen)
             return this.getQueenAvailableMoves();
 
@@ -36,7 +38,6 @@ export class Stone {
                         }
                     })
                     .filter(field => !field.stone);
-        if(this.field.board.checkers.thereAreCapturableStones()) moves = [];
         return moves;
     }
 

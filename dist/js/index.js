@@ -79,6 +79,8 @@ define("Stone", ["require", "exports"], function (require, exports) {
         };
         Stone.prototype.getAvailableMoves = function () {
             var _this = this;
+            if (this.field.board.checkers.capturableStonesExist())
+                return [];
             if (this.isQueen)
                 return this.getQueenAvailableMoves();
             var neighbourBlackFields = this.getNeighbourBlackFields();
@@ -92,8 +94,6 @@ define("Stone", ["require", "exports"], function (require, exports) {
                 }
             })
                 .filter(function (field) { return !field.stone; });
-            if (this.field.board.checkers.thereAreCapturableStones())
-                moves = [];
             return moves;
         };
         Stone.prototype.getQueenAvailableMoves = function () {
@@ -402,15 +402,15 @@ define("Checkers", ["require", "exports", "Board"], function (require, exports, 
             this.isDarksTurn = !this.isDarksTurn;
             this.showCapturableStones();
         };
-        Checkers.prototype.thereAreCapturableStones = function () {
+        Checkers.prototype.capturableStonesExist = function () {
             var _this = this;
-            var thereAreCapturableStones = false;
+            var capturableStonesExist = false;
             this.forEachStone(function (stone) {
                 if (stone.isDark == _this.isDarksTurn && stone.canCaptureAnyStone()) {
-                    thereAreCapturableStones = true;
+                    capturableStonesExist = true;
                 }
             });
-            return thereAreCapturableStones;
+            return capturableStonesExist;
         };
         return Checkers;
     }());

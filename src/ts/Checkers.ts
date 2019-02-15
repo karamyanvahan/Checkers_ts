@@ -73,13 +73,13 @@ export class Checkers {
         this.showCapturableStones();
     }
 
-    thereAreCapturableStones() {
-        let thereAreCapturableStones = false;
+    capturableStonesExist() {
+        let capturableStonesExist = false;
         this.forEachStone(stone => {
             if(stone.isDark == this.isDarksTurn && stone.canCaptureAnyStone()) {
-                thereAreCapturableStones = true;
+                capturableStonesExist = true;
             }
         });
-        return thereAreCapturableStones;
+        return capturableStonesExist;
     }
 }
