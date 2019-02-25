@@ -36,7 +36,7 @@ export class Stone {
                         }
                     })
                     .filter(field => !field.stone);
-        if(this.field.board.checkers.thereAreCapturableStones()) moves = [];
+        if(this.field.board.checkers.options.captureRequired && this.field.board.checkers.capturableStonesExist()) moves = [];
         return moves;
     }
 

@@ -8,11 +8,20 @@ body {
   justify-content: center;
   align-items: center; }
 
+.checkers-3d .board {
+  transform: rotateX(65deg); }
+
 .checkers {
-  width: 600px;
+  width: 800px;
   height: 600px;
-  border: 1px solid #000;
   position: relative; }
+  .checkers .options {
+    display: inline-block;
+    vertical-align: top;
+    margin-left: 20px; }
+    .checkers .options label {
+      display: inline-block;
+      width: 150px; }
   .checkers .win-message-box {
     position: absolute;
     width: 100%;
@@ -26,8 +35,15 @@ body {
     .checkers .win-message-box .message {
       color: #fff;
       font-size: 64px; }
+  .checkers .board, .checkers .perspective {
+    height: 100%;
+    width: 600px; }
+  .checkers .perspective {
+    display: inline-block;
+    perspective: 900px; }
   .checkers .board {
-    height: 100%; }
+    border: 1px solid #000;
+    transition: transform .2s; }
     .checkers .board .field {
       width: 12.5%;
       height: 12.5%;

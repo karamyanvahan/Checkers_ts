@@ -92,7 +92,7 @@ define("Stone", ["require", "exports"], function (require, exports) {
                 }
             })
                 .filter(function (field) { return !field.stone; });
-            if (this.field.board.checkers.thereAreCapturableStones())
+            if (this.field.board.checkers.options.captureRequired && this.field.board.checkers.capturableStonesExist())
                 moves = [];
             return moves;
         };
@@ -331,7 +331,74 @@ define("Board", ["require", "exports", "Stone", "Field"], function (require, exp
     }());
     exports.Board = Board;
 });
-define("Checkers", ["require", "exports", "Board"], function (require, exports, Board_1) {
+define("Options", ["require", "exports"], function (require, exports) {
+    "use strict";
+    exports.__esModule = true;
+    var Options = /** @class */ (function () {
+        function Options(checkers) {
+            this.htmlEl = document.createElement('div');
+            this.is3d = false;
+            this.captureRequired = false;
+            this.checkers = checkers;
+            this.htmlEl.classList.add('options');
+            this.createIs3dCheckbox();
+            this.createCaptureRequiredCheckbox();
+            checkers.htmlEl.appendChild(this.htmlEl);
+        }
+        Options.prototype.createIs3dCheckbox = function () {
+            var _this = this;
+            //container
+            var container = document.createElement('div');
+            container.classList.add('option-container');
+            this.htmlEl.appendChild(container);
+            //label
+            var label = document.createElement('label');
+            label.htmlFor = 'is3d';
+            label.innerText = '3d/2d';
+            container.appendChild(label);
+            //checkbox
+            var checkbox = document.createElement('input');
+            checkbox.id = 'is3d';
+            checkbox.type = 'checkbox';
+            checkbox.addEventListener('change', function (event) {
+                var checked = event.target.checked;
+                _this.set3d(checked);
+            });
+            container.appendChild(checkbox);
+        };
+        Options.prototype.createCaptureRequiredCheckbox = function () {
+            var _this = this;
+            //container
+            var container = document.createElement('div');
+            container.classList.add('option-container');
+            this.htmlEl.appendChild(container);
+            //label
+            var label = document.createElement('label');
+            label.htmlFor = 'captureRequired';
+            label.innerText = 'Require to capture';
+            container.appendChild(label);
+            //checkbox
+            var checkbox = document.createElement('input');
+            checkbox.id = 'captureRequired';
+            checkbox.type = 'checkbox';
+            checkbox.addEventListener('change', function (event) {
+                var checked = event.target.checked;
+                _this.captureRequired = checked;
+            });
+            container.appendChild(checkbox);
+        };
+        Options.prototype.set3d = function (checked) {
+            this.is3d = checked;
+            if (checked)
+                this.checkers.htmlEl.classList.add('checkers-3d');
+            else
+                this.checkers.htmlEl.classList.remove('checkers-3d');
+        };
+        return Options;
+    }());
+    exports.Options = Options;
+});
+define("Checkers", ["require", "exports", "Board", "Options"], function (require, exports, Board_1, Options_1) {
     "use strict";
     exports.__esModule = true;
     var Checkers = /** @class */ (function () {
@@ -343,8 +410,15 @@ define("Checkers", ["require", "exports", "Board"], function (require, exports, 
             if (className)
                 this.htmlEl.classList.add(className);
             this.board = new Board_1.Board(this);
-            this.htmlEl.appendChild(this.board.htmlEl);
+            this.createPerspective();
+            this.options = new Options_1.Options(this);
         }
+        Checkers.prototype.createPerspective = function () {
+            var perspective = document.createElement('div');
+            perspective.classList.add('perspective');
+            perspective.appendChild(this.board.htmlEl);
+            this.htmlEl.appendChild(perspective);
+        };
         Checkers.prototype.forEachStone = function (f) {
             for (var _i = 0, _a = this.board.fields; _i < _a.length; _i++) {
                 var fieldsRow = _a[_i];
@@ -402,15 +476,15 @@ define("Checkers", ["require", "exports", "Board"], function (require, exports, 
             this.isDarksTurn = !this.isDarksTurn;
             this.showCapturableStones();
         };
-        Checkers.prototype.thereAreCapturableStones = function () {
+        Checkers.prototype.capturableStonesExist = function () {
             var _this = this;
-            var thereAreCapturableStones = false;
+            var capturableStonesExist = false;
             this.forEachStone(function (stone) {
                 if (stone.isDark == _this.isDarksTurn && stone.canCaptureAnyStone()) {
-                    thereAreCapturableStones = true;
+                    capturableStonesExist = true;
                 }
             });
-            return thereAreCapturableStones;
+            return capturableStonesExist;
         };
         return Checkers;
     }());

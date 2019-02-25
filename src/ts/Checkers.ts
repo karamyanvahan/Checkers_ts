@@ -1,6 +1,6 @@
 import { Board } from './Board'
 import { Stone } from './Stone';
-
+import { Options } from './Options';
 
 export class Checkers {
     board: Board;
@@ -8,14 +8,22 @@ export class Checkers {
     selectedStone: Stone;
     isDarksTurn = false;
     capturing = false;
+    options:Options;
 
     constructor(className?: string) {
         this.htmlEl.classList.add('checkers');
         if(className) this.htmlEl.classList.add(className);
         this.board = new Board(this);
-        this.htmlEl.appendChild(this.board.htmlEl);
+        this.createPerspective();
+        this.options = new Options(this);
     }
 
+    createPerspective() {
+        let perspective = document.createElement('div');
+        perspective.classList.add('perspective');
+        perspective.appendChild(this.board.htmlEl);
+        this.htmlEl.appendChild(perspective);
+    }
 
     forEachStone(f: (stone: Stone) => void) {
         for(let fieldsRow of this.board.fields) {
@@ -73,13 +81,13 @@ export class Checkers {
         this.showCapturableStones();
     }
 
-    thereAreCapturableStones() {
-        let thereAreCapturableStones = false;
+    capturableStonesExist() {
+        let capturableStonesExist = false;
         this.forEachStone(stone => {
             if(stone.isDark == this.isDarksTurn && stone.canCaptureAnyStone()) {
-                thereAreCapturableStones = true;
+                capturableStonesExist = true;
             }
         });
-        return thereAreCapturableStones;
+        return capturableStonesExist;
     }
 }
